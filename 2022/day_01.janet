@@ -6,13 +6,13 @@
 
 
 (defn window [ind n]
-  (seq [i :range [0 (- (length ind) n)]] 
-   (map |(ind $) (range i (+ i n)))))    
+  (seq [i :range [0 (- (length ind) n)]]
+    (map |(ind $) (range i (+ i n)))))
 
 
 (def partitioned
   (map |(array/slice inp (+ 1 (0 $)) (1 $))
-    (window (array/push (array/insert (where nil? inp) -1 nil) nil) 2)))
+       (window (array/push (array/insert (where nil? inp) -1 nil) nil) 2)))
 
 (def sums (map sum partitioned))
 (sum (take 3 (sort sums >)))
@@ -30,7 +30,3 @@
            (map sum _)
            (sort _ >)
            (take 3 _)))
-           
-  
-
-

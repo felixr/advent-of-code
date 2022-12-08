@@ -4,13 +4,13 @@
 (def infname (string "inputs/day05_" (if test? "test" "input") ".txt"))
 
 (defn parse-move [m]
-  (def [_ x _ f _ t](string/split " " m))
+  (def [_ x _ f _ t] (string/split " " m))
   (map scan-number [x f t]))
 
 (def input
   (->>
-   (slurp infname)
-   (string/split "\n\n")))
+    (slurp infname)
+    (string/split "\n\n")))
 
 (def moves (map parse-move (string/split "\n" (string/trim (last input)))))
 
@@ -21,12 +21,12 @@
 
 
 (def tmp (->> (first input)
-             (string/split "\n")
-             (map (fn [x] (->> x
-                               (split 4)
-                               (|(get $ 1))
-                               (map string/from-bytes)
-                               (map (partial replace " " nil)))))))
+              (string/split "\n")
+              (map (fn [x] (->> x
+                                (split 4)
+                                (|(get $ 1))
+                                (map string/from-bytes)
+                                (map (partial replace " " nil)))))))
 (array/pop tmp)
 (pp tmp)
 
@@ -45,7 +45,7 @@
   (def data @[])
   (repeat cols (array/push data @[]))
 
-  (loop [r :down-to [(- rows 2) 0] 
+  (loop [r :down-to [(- rows 2) 0]
          c :range [0 cols]]
     (def v ((plan-in r) c))
     (if (< 0 (length (string/trim v)))
@@ -56,9 +56,9 @@
 # part1
 (def data (prep-data))
 (loop [[n src dst] :in moves]
- (repeat n
-     (array/push (data (dec dst))
-       (array/pop (data (dec src))))))
+  (repeat n
+    (array/push (data (dec dst))
+                (array/pop (data (dec src))))))
 (print "Part 1: " (string/from-bytes ;(map |($ 1) (map last data))))
 
 
@@ -70,4 +70,3 @@
   (array/concat (data (dec dst)) (reverse v)))
 
 (print "Part 2: " (string/from-bytes ;(map |($ 1) (map last data))))
-

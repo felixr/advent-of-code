@@ -17,17 +17,16 @@
 
 (print
   (->> (slurp "inputs/day03_input.txt")
-      (string/trim)
-      (string/split "\n")
-      (length)))
+       (string/trim)
+       (string/split "\n")
+       (length)))
 
 (print
   (->> (slurp "inputs/day03_input.txt")
-     (string/trim)
-     (string/split "\n")
-     (map mk-set)
-     (partition 3)
-     (mapcat (partial reduce2 (swapf keep)))
-     (map score)
-     (sum)))
-
+       (string/trim)
+       (string/split "\n")
+       (map mk-set)
+       (partition 3)
+       (mapcat (partial reduce2 (swapf keep)))
+       (map score)
+       (sum)))
