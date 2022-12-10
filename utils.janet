@@ -77,3 +77,8 @@
   "Returns the unique elements of a data structure."
   [ind]
   (keys (zipcoll ind ind)))
+
+(defn enumerate
+  "Returns (idx value) tuples for each value in the data structure"
+  [ind]
+  (map tuple (range 0 (length ind)) ind))
