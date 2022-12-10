@@ -1,67 +1,60 @@
 (use ../utils)
 (def day "10")
-(var test? true)
+(var test? false)
 
 (def infname (string "inputs/day" day "_" (if test? "test" "input") ".txt"))
 
 (def input
   (->>
-   (slurp infname)
-   (string/trim)
-   (string/split "\n")
-   (map (partial string/split " "))
-   (map (fn [c] 
-          (match c
-            ["addx" a] [:addx (scan-number a)]
-            ["noop"] [:noop 0])))))
+    (slurp infname)
+    (string/trim)
+    (string/split "\n")
+    (map (partial string/split " "))
+    (map (fn [c]
+           (match c
+             ["addx" a] [:addx (scan-number a)]
+             ["noop"] [:noop 0])))))
 
-(comment
-  (var cycle 1)
-  (var regx  1)
-  (var regvals @[1])
+(defn part1 []
+  (var regx 1)
+  (var regvals @[nil 1])
   (def cmds (array/slice input))
   (loop [[cmd v] :in cmds]
     (if (= cmd :noop)
-      (do 
-        (+= cycle 1)
+      (do
         (array/push regvals regx))
       (do
-        (+= cycle 1)
         (array/push regvals regx)
-        (+= cycle 1)
         (+= regx v)
         (array/push regvals regx))))
 
-  (map regvals [20 60 100 140 180 220])
-  (map regvals (map dec [20 60 100 140 180 220]))
-  # 21 19 18 21 16 18
-  (sum (map |(* (inc $) (regvals $)) (map dec [20 60 100 140 180 220]))))
+  (print "Part1: " (sum (map |(* $ (regvals $)) [20 60 100 140 180 220]))))
+(part1)
 
 
+(defn part2 []
+  (var cycle 0)
+  (var regx 1)
+  (var pixels @[@[] @[] @[] @[] @[] @[]])
 
-(var cycle 0)
-(var regx  1)
-(var regvals @[1])
-(var pixels @[@[] @[] @[] @[] @[] @[] @[]])
-              
+  (defn draw []
+    (def row (math/floor (/ cycle 40)))
+    (def col (% cycle 40))
+    (if (between? col (dec regx) (inc regx))
+      (array/push (pixels row) "█")
+      (array/push (pixels row) " ")))
 
-(defn draw []
- (def row (math/floor (/ (dec cycle) 40))) 
- (def col (% (dec cycle) 40))
- (array/push (pixels row) "#"))
-
-(def cmds (array/slice input))
-(loop [[cmd v] :in cmds]
-  (if (= cmd :noop)
-    (do 
-      (+= cycle 1)
-      (draw))
-    (do
-      (+= cycle 1)
-      (draw)
-      (+= cycle 1)
-      (+= regx v)
-      (draw))))
-
-
-(map print (map |(string ;$) pixels))
+  (def cmds (array/slice input))
+  (loop [[cmd v] :in cmds]
+    (if (= cmd :noop)
+      (do
+        (draw)
+        (+= cycle 1))
+      (do
+        (draw)
+        (+= cycle 1)
+        (draw)
+        (+= cycle 1)
+        (+= regx v))))
+  (each ln (map |(string ;$) pixels) (print ln)))
+(part2)
