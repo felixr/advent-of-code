@@ -9,7 +9,9 @@
     :pt (cmt (group (* :number "," :number)) ,tuple/slice)
     :main (* :pt (some (* " -> " :pt)))})
 
-(defn expand-line [line]
+(defn expand-line
+  "[a b c] => [(a b) (b c)]"
+  [line]
   (map sorted (window 2 line)))
 
 (def lines
@@ -32,25 +34,24 @@
 (defn move [g [r c]]
   (def d [(inc r) c])
   (def dv (get g d))
-  (cond
-    (nil? dv) d
+  (if dv # if one down is occupied
     (let [l [(inc r) (dec c)]
           r [(inc r) (inc c)]]
       (cond
         (nil? (get grid l)) l
-        (nil? (get grid r)) r))))
+        (nil? (get grid r)) r))
+    d))
 
 (defn part1 []
   (init-grid)
   (var done false)
   (var i 0)
-  (def min-row (min-of (map first (keys grid))))
   (def max-row (max-of (map first (keys grid))))
-  (while (and (< i 100000) (not done))
+  (while (not done)
     (var sand [-1 500])
-    (while (and (not done) (move grid sand))
-      (set sand (move grid sand))
-      (if (< max-row (first sand))
+    (loop [_ :in (rep 1) :let [m (move grid sand)] :while (and m (not done))]
+      (set sand m)
+      (if (< max-row (first m))
         (set done true)))
     (+= i 1)
     (put grid sand "o"))
@@ -63,16 +64,15 @@
   (init-grid)
   (def max-row (max-of (map first (keys grid))))
 
-  (map |(put grid [(+ 2 max-row) $] "#") (range (- 495 max-row) (+ 505 max-row)))
+  (map |(put grid [(+ 2 max-row) $] "#")
+       (range (- 498 max-row) (+ 503 max-row)))
 
-  (var done false)
   (var i 0)
-  (def min-row (min-of (map first (keys grid))))
-  (def max-row (max-of (map first (keys grid))))
-  (while (and (< i 100000) (not done))
+  (var done false)
+  (while (not done)
     (var sand [-1 500])
-    (while (move grid sand)
-      (set sand (move grid sand)))
+    (loop [_ :in (rep 1) :let [m (move grid sand)] :while m]
+      (set sand m))
     (+= i 1)
     (put grid sand "o")
     (if (= sand [0 500])
