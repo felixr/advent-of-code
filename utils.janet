@@ -82,3 +82,22 @@
   "Returns (idx value) tuples for each value in the data structure"
   [ind]
   (map tuple (range 0 (length ind)) ind))
+
+(defn grid->xpm [g colors]
+  (let
+    [rows (map first (keys g))
+     cols (map last (keys g))
+     min-row (min-of rows)
+     max-row (max-of rows)
+     min-col (min-of cols)
+     max-col (max-of cols)]
+    (print "/* XPM */\nstatic char * image[] = {")
+    (print "\"" (- max-col min-col) " " (- max-row min-row) " " 3 " " 1 "\",")
+    (eachp [ch hex] colors
+      (printf "\"%s c %s\"," ch hex))
+    (loop [r :range [min-row (inc max-row)]]
+      (print "\""
+             (string ;(map |(or (get g [r $]) ".")
+                           (range min-col (inc max-col))))
+             "\","))
+    (print "};")))
