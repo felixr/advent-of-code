@@ -49,7 +49,7 @@
   (def max-row (max-of (map first (keys grid))))
   (while (not done)
     (var sand [-1 500])
-    (loop [_ :in (rep 1) :let [m (move grid sand)] :while (and m (not done))]
+    (loop [_ :iterate true :let [m (move grid sand)] :while (and m (not done))]
       (set sand m)
       (if (< max-row (first m))
         (set done true)))
@@ -71,7 +71,7 @@
   (var done false)
   (while (not done)
     (var sand [-1 500])
-    (loop [_ :in (rep 1) :let [m (move grid sand)] :while m]
+    (loop [_ :iterate true :let [m (move grid sand)] :while m]
       (set sand m))
     (+= i 1)
     (put grid sand "o")
