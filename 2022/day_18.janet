@@ -14,11 +14,9 @@
 
 
 (def grid @{})
-
 (loop [[x y z] :in input]
   (put grid [x y z] true))
 
-# (pp grid)
 
 (defn neighbours [[x y z]]
   (seq [[dx dy dz] :in
@@ -32,43 +30,29 @@
                 (count nil? (map (partial get grid) (neighbours cube)))))))
 (part1)
 
-(var lox 9999)
-(var hix -9999)
-(var loy 9999)
-(var hiy -9999)
-(var loz 9999)
-(var hiz -9999)
+(def bounds
+  (partition 2
+             (seq [i :range [0 3]
+                   [decinc minmax] :in [[dec min-of] [inc max-of]]]
+               (decinc (minmax (map i input))))))
 
-(loop [[x y z] :in input]
-  (set lox (min lox x))
-  (set loy (min loy y))
-  (set loz (min loz z))
-  (set hix (max hix x))
-  (set hiy (max hiy y))
-  (set hiz (max hiz z)))
 
-(-= lox 1)
-(-= loy 1)
-(-= loz 1)
-(+= hix 1)
-(+= hiy 1)
-(+= hiz 1)
-# (pp [lox hix loy hiy loz hiz]) 
+(defn in-bounds? [pt bounds]
+  (every? (map |(between? (pt $) ;(bounds $)) (range (length pt)))))
 
 (def steam @{})
 
-(def stack @[[lox loy loz]])
+# Flood fill the bounding box of the lava
+# and count how often we touch lava.
+(def stack @[(map first bounds)])
 (var cnt 0)
-(while (not (empty? stack))
-  (def cur (array/pop stack))
-  (when (nil? (get steam cur))
+(loop [cur :iterate (array/pop stack)]
+  (unless (in steam cur)
     (put steam cur true)
-    (loop [[x y z] :in (neighbours cur)]
-      (if (not (nil? (get grid [x y z])))
+    (loop [coords :in (neighbours cur)]
+      (if (in grid coords)
         (+= cnt 1)
-        (if (and (between? x lox hix)
-                 (between? y loy hiy)
-                 (between? z loz hiz))
-          (array/push stack [x y z]))))))
+        (when (in-bounds? coords bounds)
+          (array/push stack coords))))))
 
 (print "Part 2: " cnt)
